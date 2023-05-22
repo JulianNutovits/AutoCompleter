@@ -6,14 +6,18 @@ import java.util.List;
 import java.util.Scanner;
 
 class TrieNode {
+
+    // TrieNode children.
     private TrieNode[] children;
     private boolean isEndOfWord;
 
+    // Constructor to initialize child nodes.
     public TrieNode() {
-        children = new TrieNode[52]; // Updated to accommodate both uppercase and lowercase letters
+        children = new TrieNode[52]; //Accommodates both uppercase and lowercase letters
         isEndOfWord = false;
     }
 
+    // Checks to make sure string input is valid, and returns an integer index for other method.
     private int getIndex(char ch) {
         if (ch >= 'a' && ch <= 'z') {
             return ch - 'a';
@@ -23,6 +27,9 @@ class TrieNode {
         throw new IllegalArgumentException("Invalid character: " + ch);
     }
 
+
+    // Insertion takes O(word.length()) complexity with this format, uses helper method above to add 
+    // specific characters to their correct index.
     public void insert(String word) {
         TrieNode current = this;
         for (char ch : word.toCharArray()) {
@@ -35,6 +42,7 @@ class TrieNode {
         current.isEndOfWord = true;
     }
 
+    // Search takes O(word.length()), uses the getIndex helper method for the index to search for.
     public boolean search(String word) {
         TrieNode current = this;
         for (char ch : word.toCharArray()) {
@@ -47,6 +55,8 @@ class TrieNode {
         return current != null && current.isEndOfWord;
     }
 
+    // Follows through a temp TrieNode to the last index of the prefix, 
+    // then uses a helper method to collect the words after the current index.
     public List<String> getWordsWithPrefix(String prefix) {
         List<String> words = new ArrayList<>();
         TrieNode current = this;
@@ -61,6 +71,8 @@ class TrieNode {
         return words;
     }
 
+    // Recursive method to follow through the TrieNode and gather the end of the words
+    // from the above method. 
     private void collectWords(TrieNode node, String prefix, List<String> words) {
         if (node.isEndOfWord) {
             words.add(prefix);
@@ -74,7 +86,7 @@ class TrieNode {
         for (char ch = 'A'; ch <= 'Z'; ch++) {
             int index = getIndex(ch);
             if (node.children[index] != null) {
-                collectWords(node.children[index], prefix + ch, words);
+                collectWords(node.children[index], prefix + ch, words); // prefix + ch = complete word
             }
         }
     }
@@ -90,6 +102,7 @@ public class AutoCompleter {
         String fileName = scanner.nextLine();
         String filePath = "./" + fileName + ".txt";
 
+        // try-catch block for user convenience.
         try {
             loadNamesFromFile(filePath);
         } catch (IOException e) {
@@ -99,7 +112,7 @@ public class AutoCompleter {
         }
 
         System.out.println("File loaded successfully.");
-
+        // main driver part of main function.
         while (true) {
 			System.out.println("Enter a name to autocomplete:");			
             String input = scanner.nextLine();
@@ -117,7 +130,7 @@ public class AutoCompleter {
             }
         }
     }
-
+    // method to handle the file input from users and insert into the trie.
     private static void loadNamesFromFile(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
